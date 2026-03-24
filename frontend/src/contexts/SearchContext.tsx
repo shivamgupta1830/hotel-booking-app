@@ -32,10 +32,15 @@ export const SearchContextProvider = ({
     () =>
       new Date(sessionStorage.getItem("checkIn") || new Date().toISOString())
   );
-  const [checkOut, setCheckOut] = useState<Date>(
-    () =>
-      new Date(sessionStorage.getItem("checkOut") || new Date().toISOString())
-  );
+  const [checkOut, setCheckOut] = useState<Date>(() => {
+    const storedCheckOut = sessionStorage.getItem("checkOut");
+    if (storedCheckOut) {
+      return new Date(storedCheckOut);
+    }
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow;
+  });
   const [adultCount, setAdultCount] = useState<number>(() =>
     parseInt(sessionStorage.getItem("adultCount") || "1")
   );

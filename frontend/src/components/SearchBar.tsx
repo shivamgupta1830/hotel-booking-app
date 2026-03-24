@@ -27,6 +27,18 @@ const SearchBar = () => {
     navigate("/search");
   };
 
+  const handleClear = () => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    setDestination("");
+    setCheckIn(today);
+    setCheckOut(tomorrow);
+    setAdultCount(1);
+    setChildCount(0);
+    search.saveSearchValues("", today, tomorrow, 1, 0);
+  };
+
   const minDate = new Date();
   const maxDate = new Date();
   maxDate.setFullYear(maxDate.getFullYear() + 1);
@@ -73,12 +85,19 @@ const SearchBar = () => {
       <div>
         <DatePicker
           selected={checkIn}
-          onChange={(date) => setCheckIn(date as Date)}
+          onChange={(date) => {
+            const newCheckIn = date as Date;
+            setCheckIn(newCheckIn);
+            const newCheckOut = new Date(newCheckIn);
+            newCheckOut.setDate(newCheckOut.getDate() + 1);
+            setCheckOut(newCheckOut);
+          }}
           selectsStart
           startDate={checkIn}
           endDate={checkOut}
           minDate={minDate}
           maxDate={maxDate}
+          dateFormat="dd/MM/yyyy"
           placeholderText="Check-in Date"
           className="min-w-full bg-white p-2 focus:outline-none"
           wrapperClassName="min-w-full"
@@ -87,12 +106,16 @@ const SearchBar = () => {
       <div>
         <DatePicker
           selected={checkOut}
-          onChange={(date) => setCheckOut(date as Date)}
-          selectsStart
+          onChange={(date) => {
+            const newCheckOut = date as Date;
+            setCheckOut(newCheckOut);
+          }}
+          selectsEnd
           startDate={checkIn}
           endDate={checkOut}
-          minDate={minDate}
+          minDate={new Date(checkIn.getTime() + 24 * 60 * 60 * 1000)}
           maxDate={maxDate}
+          dateFormat="dd/MM/yyyy"
           placeholderText="Check-out Date"
           className="min-w-full bg-white p-2 focus:outline-none"
           wrapperClassName="min-w-full"
@@ -102,7 +125,11 @@ const SearchBar = () => {
         <button className="w-2/3 bg-purple-700 text-white h-full p-2 font-bold text-xl hover:bg-purple-500">
           Search
         </button>
-        <button className="w-1/3 bg-red-600 text-white h-full p-2 font-bold text-xl hover:bg-red-500">
+        <button
+          type="button"
+          onClick={handleClear}
+          className="w-1/3 bg-red-600 text-white h-full p-2 font-bold text-xl hover:bg-red-500"
+        >
           Clear
         </button>
       </div>
